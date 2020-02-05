@@ -29,6 +29,9 @@ function init(){
 	var stars;
 	var scoreText;
 	var bomb;
+	var coeur1;
+	var coeur2;
+	var coeur3;
 }
 
 function preload(){
@@ -39,12 +42,17 @@ function preload(){
 	this.load.spritesheet('bomb','Assets/Sprites/09-Bomb/Bomb On (52x56).png',{frameWidth: 16,frameHeight: 21});
 	this.load.spritesheet('perso','Assets/Sprites/01-King Human/Idle (78x58).png',{frameWidth: 38, frameHeight: 28});
 	this.load.spritesheet('persoR','Assets/Sprites/01-King Human/run.png',{frameWidth: 38, frameHeight: 29});
+	this.load.image('barrepv','Assets/Sprites/12-Live and Coins/Live Bar.png');
+	this.load.spritesheet('petitcoeur','Assets/Sprites/12-Live and Coins/Small Heart Idle (18x14).png',{frameWidth: 8,frameHeight: 7});
+	this.load.spritesheet('coeurhit','Assets/Sprites/12-Live and Coins/Small Heart Hit (18x14).png',{frameWidth: 8,frameHeight: 11});
 }
 
 
 
 function create(){
 	this.add.image(400,300,'background');
+	this.add.image(760,30,'barrepv');
+
 
 	platforms = this.physics.add.staticGroup();
 	platforms.create(400,568,'sol').setScale(2).refreshBody();
@@ -79,11 +87,29 @@ function create(){
 		repeat: -1
 	})
 
+	this.anims.create({
+		key:'petitcoeurA',
+		frames: this.anims.generateFrameNumbers('petitcoeur', {star: 0,end: 7}),
+		frameRate: 10,
+		repeat: -1
+	})
+
+	this.anims.create({
+		key:'coeurhited',
+		frames: this.anims.generateFrameNumbers('coeurhit', {star: 0,end: 1}),
+		frameRate:10,
+		repeat: 1
+	})
+
 	stars = this.physics.add.group({
 		key: 'etoile',
 		repeat:11,
 		setXY: {x:12,y:0,stepX:70}
 	});
+
+	coeur1 = this.physics.add.sprite(750,31,'petitcoeur').setScale(1.3);coeur1.setGravityY(-300);coeur1.anims.play('petitcoeurA',true);
+	coeur2 = this.physics.add.sprite(760,31,'petitcoeur').setScale(1.3);coeur2.setGravityY(-300);coeur2.anims.play('petitcoeurA',true);
+	coeur3 = this.physics.add.sprite(770,31,'petitcoeur').setScale(1.3);coeur3.setGravityY(-300);coeur3.anims.play('petitcoeurA',true);
 	
 	this.physics.add.collider(stars,platforms);
 	this.physics.add.overlap(player,stars,collectStar,null,this);
@@ -92,12 +118,14 @@ function create(){
 	bombs = this.physics.add.group();
 	this.physics.add.collider(bombs,platforms);
 	this.physics.add.collider(player,bombs, hitBomb, null, this);
+
+
+	
 }
 
 
 
 function update(){
-	
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
 		player.setVelocityX(-300);
@@ -127,6 +155,28 @@ function update(){
 
 }
 function hitBomb(player, bomb){
+	var vie = 3;
+	bomb.disableBody(true,true);
+	if(vie == 3){
+		coeur3.disableBody(true,true);
+		coeur3.anims.play('coeurhited',true);
+		vie--;
+	}
+	if(vie == 2){
+		coeur2.disableBody(true,true);
+		coeur2.anims.play('coeurhited',true);
+		vie--;
+	}
+	if(vie == 1){
+		coeur1.disableBody(true,true);
+		coeur1.anims.play('coeurhited',true);
+		
+		this.physics.pause();
+		player.setTint(0xff0000);
+		player.anims.play('turn');
+		gameOver=true;
+	}
+
 	this.physics.pause();
 	player.setTint(0xff0000);
 	player.anims.play('turn');
