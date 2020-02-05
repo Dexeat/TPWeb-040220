@@ -32,10 +32,11 @@ function init(){
 function preload(){
 	this.load.image('background','assets/sky.png');	
 	this.load.image('fond','assets/fond.png');
-	this.load.image('etoile','assets/star.png');
-	this.load.image('sol','assets/platform.png');
-	this.load.image('bomb','assets/bomb.png');
-	this.load.spritesheet('perso','assets/dude.png',{frameWidth: 32, frameHeight: 48});
+	this.load.image('etoile','Assets/Sprites/08-Box/idle.png');
+	this.load.image('sol','Assets/sol.png');
+	this.load.spritesheet('bomb','Assets/Sprites/09-Bomb/Bomb On (52x56).png',{frameWidth: 16,frameHeight: 21});
+	this.load.spritesheet('perso','Assets/Sprites/01-King Human/Idle (78x58).png',{frameWidth: 38, frameHeight: 28});
+	this.load.spritesheet('persoR','Assets/Sprites/01-King Human/run.png',{frameWidth: 38, frameHeight: 29});
 }
 
 
@@ -58,17 +59,24 @@ function create(){
 	
 	this.anims.create({
 		key:'left',
-		frames: this.anims.generateFrameNumbers('perso', {start: 0, end: 3}),
+		frames: this.anims.generateFrameNumbers('persoR', {start: 0, end: 8}),
 		frameRate: 10,
 		repeat: -1
 	});
 	
 	this.anims.create({
 		key:'stop',
-		frames: [{key: 'perso', frame:4}],
-		frameRate: 20
+		frames: this.anims.generateFrameNumbers('perso', {start: 0,end: 10}),
+		frameRate: 10
 	});
 	
+	this.anims.create({
+		key:'bombA',
+		frames: this.anims.generateFrameNumbers('bomb', {start: 0,end: 3}),
+		frameRate: 10,
+		repeat: -1
+	})
+
 	stars = this.physics.add.group({
 		key: 'etoile',
 		repeat:11,
@@ -90,11 +98,11 @@ function update(){
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
 		player.setVelocityX(-300);
-		player.setFlipX(false);
+		player.setFlipX(true);
 	}else if(cursors.right.isDown){
 		player.setVelocityX(300);
 		player.anims.play('left', true);
-		player.setFlipX(true);
+		player.setFlipX(false);
 	}else{
 		player.anims.play('stop', true);
 		player.setVelocityX(0);
@@ -125,6 +133,7 @@ function collectStar(player, star){
 			Phaser.Math.Between(400,800):
 			Phaser.Math.Between(0,400);
 		var bomb = bombs.create(x, 16, 'bomb');
+		bomb.anims.play('bombA',true);
 		bomb.setBounce(1);
 		bomb.setCollideWorldBounds(true);
 		bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
