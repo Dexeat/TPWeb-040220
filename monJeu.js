@@ -19,6 +19,8 @@ scene: {
 
 var game = new Phaser.Game(config);
 var score = 0;
+var saut;
+var sauvesaut;
 
 function init(){
  	var platforms;
@@ -95,6 +97,7 @@ function create(){
 
 
 function update(){
+	
 	if(cursors.left.isDown){
 		player.anims.play('left', true);
 		player.setVelocityX(-300);
@@ -108,10 +111,20 @@ function update(){
 		player.setVelocityX(0);
 	}
 	
-	if(cursors.up.isDown && player.body.touching.down){
-		player.setVelocityY(-330);
-	} 
-	
+	//saut
+	if(cursors.up.isUp && player.body.touching.down){
+		saut = 2
+	}
+	if(cursors.up.isDown && sauvesaut == 1 && saut>0){
+		sauvesaut = 0;
+		saut -=1;
+		player.setVelocityY(-340);
+	}
+	if(cursors.up.isUp){
+		sauvesaut = 1;
+	}
+
+
 }
 function hitBomb(player, bomb){
 	this.physics.pause();
